@@ -1,0 +1,48 @@
+{% extends 'education/base.html' %}
+{% block title %}Войдите или Зарегистрируйтесь{% endblock%}
+{%block body%}
+<style>
+    html, body{
+    height: 100%;
+    }
+    form{
+    display:inline-block;
+    padding: 10px;
+    border: 1px solid black;
+    margin: auto;
+    margin-right: auto;
+    margin-left: auto;
+    }
+    .container{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    height: 30%
+    }
+    h1{
+    font-size: 40px;
+    padding-top: 20px;
+    text-align: center;
+    }
+</style>
+<h1>Пожалуйста, Зарегистрируйтесь</h1>
+<div class="container">
+
+    <form method="post" >
+    {% csrf_token %}
+    {% for field in form %}
+        <p>{{ field.label_tag }} {{ field }}</p>
+    {% endfor %}
+
+    <div class="errors">
+        {% if form.errors %}
+            {%for i in form.non_field_errors %}
+            <p>{{ i }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <input type="submit" value="Register">
+    </form>
+</div>
+{% endblock %}

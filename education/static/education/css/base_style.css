@@ -1,0 +1,9 @@
+header nav{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 7px;
+	padding-left: 30px;
+	padding-right: 30px;
+
+}

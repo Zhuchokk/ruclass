@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {%block head%}
+    {% endblock %}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'education/css/base_style.css' %"}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <button>hi</button>
+                {%block header_title%}<a href="">RUКласс</a>{% endblock %}
+                <p>аккаунт</p>
+            </nav>
+        </div>
+    </header>
+    {% block body%}{% endblock %}
+</body>
+</html>
