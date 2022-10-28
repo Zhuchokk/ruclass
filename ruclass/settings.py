@@ -33,6 +33,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+AUTHENTICATION_BACKENDS = [
+    'education.auth.EmailAuthBackend',
+]
+
 INSTALLED_APPS = [
     'education.apps.EducationConfig',
     'django.contrib.admin',
@@ -106,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization
