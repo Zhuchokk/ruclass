@@ -1,3 +1,10 @@
 from django.contrib import admin
+from .models import Course, Task
 
-# Register your models here.
+
+class CourseAdmin(admin.ModelAdmin):
+    filter_horizontal = ['members']
+
+
+admin.site.register(Course, CourseAdmin)
+admin.site.register(Task)

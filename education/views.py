@@ -5,6 +5,9 @@ from django.views.generic.edit import FormView
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.views.generic.list import ListView
+from .models import Course, Task
+from django.utils import timezone
 
 
 class Login(FormView):
@@ -37,6 +40,8 @@ class Register(FormView):
         data = form.cleaned_data
         if data['password'] == data['password2']:
             user = User.objects.create_user(username=data['name'] + '_' + data['surname'], email=data['email'], password=data['password'])
+            user.name = data['name']
+            user.surname = data['surname']
             login(self.request, user)
         else:
             form.add_error(None, 'Неверно указан пароль')
@@ -54,6 +59,26 @@ class HomeCheck(TemplateView):
             return redirect('Login')
 
 
-class Home(View):
-    def get(self, request):
-        return render(request, 'education/home.html')
+class Home(ListView):
+
+    template_name = "education/home.html"
+    model = Course
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_paginated']= False
+        # context['object_list'] = Course.objects.filter(members__email=self.request.user.email)
+        # context['task_list'] = []
+        # for course in context['object_list']:
+        #     context['task_list'].append(Task.objects.filter(course=course, deadline__gt=timezone.now()))
+        courses = Course.objects.filter(members__email=self.request.user.email)
+        tasks = []
+        for course in courses:
+            tasks.append(Task.objects.filter(course=course, deadline__gt=timezone.now()))
+        context['object_list'] = zip(courses, tasks)
+        print(context['object_list'])
+        return context
+
+    # def get(self, request):
+    #     return render(request, 'education/home.html')
