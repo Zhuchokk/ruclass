@@ -77,8 +77,18 @@ class Home(ListView):
         for course in courses:
             tasks.append(Task.objects.filter(course=course, deadline__gt=timezone.now()))
         context['object_list'] = zip(courses, tasks)
-        print(context['object_list'])
+        print(context['object_list'],  "- Home")
         return context
 
-    # def get(self, request):
-    #     return render(request, 'education/home.html')
+
+class OneCourse(ListView):
+    template_name = "education/course.html"
+    model = Task
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        code = self.kwargs.get('code')
+
+        context['object_list'] = Task.objects.filter(course__code=code)
+        print(context['object_list'], "- OneCourse")
+        return context

@@ -1,0 +1,6 @@
+{% extends 'education/base.html' %}
+{% block body %}
+    {% for task in object_list %}
+        <p>{{ task.title }}</p>
+    {% endfor %}
+{% endblock %}

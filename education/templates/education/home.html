@@ -2,7 +2,7 @@
 {% block title %}Курсы{% endblock %}
 {% block body %}
 {% for course, tasks in object_list%}
-    <p>{{ course.name }}</p>
+    <p><a href="{% url 'OneCourse' code=course.code %}">{{ course.name }}</a></p>
     <p>{{ take_list.forloop.counter }}</p>
     {% for task in tasks %}
         <p>{{ task.title }}</p>
