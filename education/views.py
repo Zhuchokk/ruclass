@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, HttpResponse
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -92,3 +92,8 @@ class OneCourse(ListView):
         context['object_list'] = Task.objects.filter(course__code=code)
         print(context['object_list'], "- OneCourse")
         return context
+
+
+class OneTask(View):
+    def get(self, request, code):
+        return render(request, template_name='education/task.html', context={'task': Task.objects.get(code=code)})

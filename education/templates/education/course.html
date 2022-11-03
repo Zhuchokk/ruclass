@@ -1,6 +1,6 @@
 {% extends 'education/base.html' %}
 {% block body %}
     {% for task in object_list %}
-        <p>{{ task.title }}</p>
+        <p><a href="{% url 'OneTask' code=task.code %}">{{ task.title }}</a></p>
     {% endfor %}
 {% endblock %}

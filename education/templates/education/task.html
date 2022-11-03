@@ -1,0 +1,9 @@
+{% extends "education/base.html" %}
+{% block body %}
+<h1>{{ task.title }}</h1>
+<h5>{{ task.created_date }}</h5>
+<p>{{ task.instructions }}</p>
+<b>Выполнить до {{ task.deadline }}</b>
+<br>
+<i>Баллы:  {{ task.points }}</i>
+{% endblock %}
