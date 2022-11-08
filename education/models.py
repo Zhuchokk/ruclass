@@ -19,3 +19,10 @@ class Task(models.Model):
     created_date = models.DateTimeField('Дата назначения')
     points = models.IntegerField('Баллы', default=5)
     #homeworks
+
+
+class Work(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField('content')
+    created_date = models.DateTimeField('Дата сдачи')
