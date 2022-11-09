@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from django.views import View
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, FormMixin
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.list import ListView
-from .models import Course, Task
+from .models import Course, Task, Work
 from django.utils import timezone
 
 
@@ -94,6 +94,24 @@ class OneCourse(ListView):
         return context
 
 
-class OneTask(View):
-    def get(self, request, code):
-        return render(request, template_name='education/task.html', context={'task': Task.objects.get(code=code)})
+class OneTask(FormView):
+    form_class = WorkForm
+    template_name = 'education/task.html'
+
+    # def get(self, request, code):
+    #     return render(request, template_name='education/task.html', context={'task': Task.objects.get(code=code)})
+
+    def get_context_data(self,**kwargs):
+        context = super(OneTask, self).get_context_data(**kwargs)
+        print(self.kwargs.get('code'))
+        context.update({'task': Task.objects.get(code=self.kwargs.get('code'))})
+        return context
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        work = Work(task=Task.objects.get(code=self.kwargs.get('code')), user=self.request.user, content=data['content'], created_date=timezone.now())
+        work.save()
+        return super(OneTask, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('OneTask', kwargs={'code': self.kwargs.get('code')})
