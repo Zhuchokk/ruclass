@@ -50,20 +50,10 @@ class Register(FormView):
         return super(Register, self).form_valid(form)
 
 
-class HomeCheck(TemplateView):
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return Home.as_view()(request)
-        else:
-            # return redirect("Login")
-            return redirect('Login')
-
-
 class Home(ListView):
 
     template_name = "education/home.html"
     model = Course
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,6 +70,12 @@ class Home(ListView):
         print(context['object_list'],  "- Home")
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return self.get(request, *args, **kwargs)
+        else:
+            return redirect("Login")
+
 
 class OneCourse(ListView):
     template_name = "education/course.html"
@@ -93,13 +89,16 @@ class OneCourse(ListView):
         print(context['object_list'], "- OneCourse")
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return self.get(request, *args, **kwargs)
+        else:
+            return redirect("Login")
+
 
 class OneTask(FormView):
     form_class = WorkForm
     template_name = 'education/task.html'
-
-    # def get(self, request, code):
-    #     return render(request, template_name='education/task.html', context={'task': Task.objects.get(code=code)})
 
     def get_context_data(self,**kwargs):
         context = super(OneTask, self).get_context_data(**kwargs)
@@ -115,3 +114,9 @@ class OneTask(FormView):
 
     def get_success_url(self):
         return reverse('OneTask', kwargs={'code': self.kwargs.get('code')})
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return self.get(request, *args, **kwargs)
+        else:
+            return redirect("Login")
