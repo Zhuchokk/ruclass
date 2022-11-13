@@ -24,5 +24,6 @@ class Task(models.Model):
 class Work(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    mark = models.IntegerField('Оценка', default=5)
     content = models.TextField('content')
     created_date = models.DateTimeField('Дата сдачи')

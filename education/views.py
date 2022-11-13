@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic.list import ListView
 from .models import Course, Task, Work
 from django.utils import timezone
+from  django.core.exceptions import ObjectDoesNotExist
 
 
 class Login(FormView):
@@ -57,12 +58,14 @@ class Home(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_paginated']= False
+        context['is_paginated'] = False
         # context['object_list'] = Course.objects.filter(members__email=self.request.user.email)
         # context['task_list'] = []
         # for course in context['object_list']:
         #     context['task_list'].append(Task.objects.filter(course=course, deadline__gt=timezone.now()))
         courses = Course.objects.filter(members__email=self.request.user.email)
+        own_courses = Course.objects.filter(owner=self.request.user.pk)
+        context['own_courses'] = own_courses
         tasks = []
         for course in courses:
             tasks.append(Task.objects.filter(course=course, deadline__gt=timezone.now()))
@@ -100,23 +103,40 @@ class OneTask(FormView):
     form_class = WorkForm
     template_name = 'education/task.html'
 
-    def get_context_data(self,**kwargs):
+    def get_context_data(self, **kwargs):
         context = super(OneTask, self).get_context_data(**kwargs)
-        print(self.kwargs.get('code'))
-        context.update({'task': Task.objects.get(code=self.kwargs.get('code'))})
+        isdone = False
+        current_task = Task.objects.get(code=self.kwargs.get('code'))
+        try:
+            current_work = Work.objects.get(task=current_task, user=self.request.user.pk)
+            isdone = True
+            context['form'].initial['content'] = current_work.content
+        except ObjectDoesNotExist:
+            pass
+
+        context.update({'task': current_task, 'isdone': isdone})
         return context
 
     def form_valid(self, form):
         data = form.cleaned_data
-        work = Work(task=Task.objects.get(code=self.kwargs.get('code')), user=self.request.user, content=data['content'], created_date=timezone.now())
-        work.save()
+        current_work, created = Work.objects.get_or_create(task=Task.objects.get(code=self.kwargs.get('code')), user=self.request.user, defaults={'created_date': timezone.now()} )
+        current_work.content = data['content']
+        current_work.created_date = timezone.now()
+        current_work.save()
         return super(OneTask, self).form_valid(form)
+    
+    def form_invalid(self, form):
+        return super(OneTask, self).form_invalid(form)
 
     def get_success_url(self):
         return reverse('OneTask', kwargs={'code': self.kwargs.get('code')})
 
     def dispatch(self, request, *args, **kwargs):
+        print('dispatch')
         if self.request.user.is_authenticated:
-            return self.get(request, *args, **kwargs)
+            if request.method == 'GET':
+                return self.get(request, *args, **kwargs)
+            else:
+                return self.post(request, *args, **kwargs)
         else:
             return redirect("Login")

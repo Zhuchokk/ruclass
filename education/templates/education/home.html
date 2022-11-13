@@ -1,11 +1,17 @@
 {% extends 'education/base.html' %}
 {% block title %}Курсы{% endblock %}
 {% block body %}
+{% if own_courses|length > 0%}
+    <h3>Курсы, которыми вы владеете</h3>
+    {% for course in own_courses %}
+        <p><a href="{% url 'OneCourse' code=course.code %}">{{ course.name }}</a></p>
+    {% endfor %}
+    <h3>Курсы, где вы учитесь</h3>
+{% endif %}
 {% for course, tasks in object_list%}
     <p><a href="{% url 'OneCourse' code=course.code %}">{{ course.name }}</a></p>
-    <p>{{ take_list.forloop.counter }}</p>
     {% for task in tasks %}
-        <p>{{ task.title }}</p>
+        <p><a href="{% url 'OneTask' code=task.code %}">{{ task.title }}</a></p>
     {% endfor %}
     <p>--------------</p>
 {% endfor %}
